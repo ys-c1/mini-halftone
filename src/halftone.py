@@ -61,7 +61,7 @@ def _quantize(value: float, levels: int) -> int:
     step = 255.0 / (levels - 1)
     index = int(value / step + 0.5)
     quantized = index * step
-    return _clamp255(quantized)
+    return int(round(quantized))
 
 
 def floyd_steinberg(
@@ -98,7 +98,7 @@ def floyd_steinberg(
             out[y][x] = new_value
 
             error = old_value - new_value
-            step_x = 1 if left_to_right else -1
+            step_x = 1
             # (dy, dx, weight): 7/16 is the next sample in scan direction,
             # 3/16 and 1/16 mirror across the next row, 5/16 is straight down.
             for dy, dx, weight in (
@@ -110,7 +110,7 @@ def floyd_steinberg(
                 ny = y + dy
                 nx = x + dx
                 if 0 <= ny < height and 0 <= nx < width:
-                    work[ny][nx] += error * weight / 16.0
+                    work[ny][nx] += error * weight / 8.0
 
     return out
 
